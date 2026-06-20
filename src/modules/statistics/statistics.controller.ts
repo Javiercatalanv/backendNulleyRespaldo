@@ -1,9 +1,25 @@
-import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { StatisticsService } from './statistics.service';
+ 
+// Agregar este DTO (puede ir en el mismo archivo o en dto/counterfactual-group.dto.ts)
+import { IsArray, IsUUID, ArrayMinSize } from 'class-validator';
+ 
+export class CounterfactualGroupDto {
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsUUID('all', { each: true })
+  researcherIds: string[];
+}
+ 
 
 @Controller('statistics')
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
+
+  @Post('counterfactual-group')
+  counterfactualGroup(@Body() dto: CounterfactualGroupDto) {
+    return this.statisticsService.getCounterfactualGroup(dto.researcherIds);
+  }
 
   /**
    * GET /statistics/yearly-per-researcher
@@ -27,15 +43,6 @@ export class StatisticsController {
   /**
    * GET /statistics/counterfactual/:researcherId
    * → What the institution loses if this researcher leaves.
-   *
-   * Returns:
-   *   - totalPublications
-   *   - publicationsExclusiveToHim
-   *   - publicationsCoAuthoredWithOtherUcn
-   *   - citationsLost
-   *   - quartileDistributionLost: { Q1, Q2, Q3, Q4, none }
-   *   - yearlyImpactLost: [{ year, publications, citations }]
-   *   - collaboratorsAffected: [{ researcherId, fullName, sharedPapers }]
    */
   @Get('counterfactual/:researcherId')
   counterfactual(@Param('researcherId', ParseUUIDPipe) researcherId: string) {

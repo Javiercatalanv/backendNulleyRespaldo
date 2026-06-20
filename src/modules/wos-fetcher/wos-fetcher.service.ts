@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  InternalServerErrorException,
-  ServiceUnavailableException,
-  NotFoundException,
-} from '@nestjs/common';
+import {Injectable,Logger,InternalServerErrorException,ServiceUnavailableException,NotFoundException} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { lastValueFrom } from 'rxjs';
@@ -23,10 +17,6 @@ export interface WosSyncResult {
   errors: string[];
 }
 
-/**
- * Client for the Web of Science Starter API + offline reprocessor.
- * Mirrors `ScopusFetcherService` so both platforms work the same way.
- */
 @Injectable()
 export class WosFetcherService {
   private readonly logger = new Logger(WosFetcherService.name);
@@ -34,7 +24,6 @@ export class WosFetcherService {
   private static readonly API_BASE =
     'https://api.clarivate.com/apis/wos-starter/v1';
   private static readonly PLATFORM_CODE = 'WOS';
-  /** 1.1s — needed to stay below the 1 req/s limit of the WoS Starter Free Trial. */
   private static readonly REQUEST_DELAY_MS = 1100;
 
   constructor(
@@ -98,10 +87,6 @@ export class WosFetcherService {
     };
   }
 
-  /**
-   * Replays every successful WoS snapshot through the current upsert
-   * logic. Zero API quota consumed.
-   */
   async reprocessAllSnapshots(): Promise<{
     snapshotsProcessed: number;
     publicationsUpserted: number;
@@ -149,10 +134,6 @@ export class WosFetcherService {
     );
     return result;
   }
-
-  // ──────────────────────────────────────────────────────────────────
-  // Internals (private)
-  // ──────────────────────────────────────────────────────────────────
 
   private async fetchAndStoreByExternalId(
     profile: ResearcherProfile,

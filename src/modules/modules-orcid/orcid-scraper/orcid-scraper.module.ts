@@ -4,7 +4,7 @@ import { OrcidScraperService } from './orcid-scraper.service';
 import { OrcidScraperController } from './orcid-scraper.controller';
 
 @Module({
-  imports: [HttpModule], // Necesario para hacer las peticiones a la API
+  imports: [HttpModule],
   controllers: [OrcidScraperController],
   providers: [OrcidScraperService],
   exports: [OrcidScraperService],

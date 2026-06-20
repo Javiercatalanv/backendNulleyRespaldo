@@ -1,14 +1,6 @@
 import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
 import { ApiSnapshotsService } from './api-snapshots.service';
 
-/**
- * Read-only HTTP entry-point for inspecting captured API responses.
- *
- * No POST/PUT/DELETE: snapshots are produced by the fetchers (and only
- * by the fetchers). The frontend or an admin UI uses these endpoints to
- * answer "what did the API tell us last time we asked?" without spending
- * a request from our quota.
- */
 @Controller('api-snapshots')
 export class ApiSnapshotsController {
   constructor(private readonly apiSnapshotsService: ApiSnapshotsService) {}
@@ -28,8 +20,6 @@ export class ApiSnapshotsController {
   /**
    * GET /api-snapshots/latest/:platform/:externalId
    * → Latest successful snapshot for that (platform, externalId) pair.
-   *   This is the "use the cache" endpoint: lets the frontend look at
-   *   what we already know without burning an API call.
    */
   @Get('latest/:platform/:externalId')
   async findLatest(

@@ -8,13 +8,11 @@ export class ResearcherProfilesController {
     private readonly researcherProfilesService: ResearcherProfilesService,
   ) {}
 
-  /** POST /researcher-profiles — manually attach a platform profile to a researcher. */
   @Post()
   create(@Body() dto: CreateResearcherProfileDto) {
     return this.researcherProfilesService.create(dto);
   }
 
-  /** GET /researcher-profiles — full listing (admin / debugging). */
   @Get()
   findAll() {
     return this.researcherProfilesService.findAll();

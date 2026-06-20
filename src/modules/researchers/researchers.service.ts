@@ -4,11 +4,6 @@ import { Repository } from 'typeorm';
 import { Researcher } from './entities/researcher.entity';
 import { CreateResearcherDto } from './dto/create-researcher.dto';
 
-/**
- * Application logic for researchers. Has a single responsibility:
- * persisting and retrieving the people behind the data — nothing about
- * platforms, profiles or publication counts lives here.
- */
 @Injectable()
 export class ResearchersService {
   constructor(
@@ -16,11 +11,6 @@ export class ResearchersService {
     private readonly researcherRepository: Repository<Researcher>,
   ) {}
 
-  /**
-   * Persists a new researcher. Used by the public REST endpoint and also
-   * (indirectly) by the Excel import flow when a researcher does not yet
-   * exist in the database.
-   */
   async create(dto: CreateResearcherDto): Promise<Researcher> {
     const researcher = this.researcherRepository.create(dto);
     return this.researcherRepository.save(researcher);
@@ -28,9 +18,7 @@ export class ResearchersService {
 
   /**
    * Returns every researcher together with their profiles, the platform
-   * each profile belongs to, and the publication counts. This single
-   * eager-loaded query is what the front-end consumes to render the
-   * researchers list.
+   * each profile belongs to, and the publication counts.
    */
   findAll(): Promise<Researcher[]> {
     return this.researcherRepository.find({
@@ -55,10 +43,7 @@ export class ResearchersService {
   }
 
   /**
-   * Looks up a researcher by full name. Used by the Excel importer to
-   * decide whether a row corresponds to an already-existing person or a
-   * new one. Case-insensitive comparison keeps imports robust against
-   * typing inconsistencies in source data.
+   * Looks up a researcher by full name.
    */
   findByFullName(
     firstName: string,

@@ -11,12 +11,6 @@ export class ScopusFetcherController {
 
   /**
    * GET /scopus-fetcher/test/:scopusAuthorId
-   *
-   * Smoke-test endpoint. Calls the Scopus API with the given Author ID
-   * and returns the raw publications WITHOUT persisting anything.
-   * Use this immediately after pasting your API key into `.env` to
-   * confirm everything is wired up correctly.
-   *
    * Example:
    *   curl http://localhost:3000/scopus-fetcher/test/57221263468
    */
@@ -28,7 +22,6 @@ export class ScopusFetcherController {
   /**
    * POST /scopus-fetcher/sync
    * → syncs every Scopus profile registered in the database.
-   *   This is the endpoint the future cron job will call every semester.
    */
   @Post('sync')
   syncAll() {
@@ -38,7 +31,6 @@ export class ScopusFetcherController {
   /**
    * POST /scopus-fetcher/sync/:profileId
    * → syncs a single profile by its internal UUID. Useful for ad-hoc
-   *   refreshes after editing a researcher.
    */
   @Post('sync/:profileId')
   syncOne(@Param('profileId', ParseUUIDPipe) profileId: string) {

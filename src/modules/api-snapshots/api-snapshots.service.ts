@@ -48,20 +48,9 @@ export class ApiSnapshotsService {
       .exec();
   }
 
-  /**
-   * Returns the LATEST successful snapshot for every distinct
-   * (platform, externalId) pair on the given platform.
-   *
-   * Two successful syncs of the same researcher will have left two
-   * snapshots in the collection (the same paper list, slightly newer
-   * citation counts). For the rebuild flow we only want the latest of
-   * each, otherwise we'd upsert the same papers twice (idempotent but
-   * wasteful).
-   */
   async findSuccessfulByPlatform(
     platform: string,
   ): Promise<ApiSnapshotDocument[]> {
-    // Get the most recent snapshot per externalId via aggregation.
     const latestIds = await this.apiSnapshotModel.aggregate<{ _id: any }>([
       { $match: { platform, status: 'success' } },
       { $sort: { createdAt: -1 } },

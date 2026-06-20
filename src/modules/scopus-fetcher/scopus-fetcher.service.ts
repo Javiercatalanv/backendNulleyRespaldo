@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  InternalServerErrorException,
-  ServiceUnavailableException,
-  NotFoundException,
-} from '@nestjs/common';
+import {Injectable,Logger,InternalServerErrorException,ServiceUnavailableException,NotFoundException} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { lastValueFrom } from 'rxjs';
@@ -25,13 +19,6 @@ export interface ScopusSyncResult {
 
 /**
  * Client for the Scopus Search API + offline reprocessor.
- *
- * Two execution modes:
- *   - `syncOneProfile / syncAllProfiles`: hit the API, save a snapshot,
- *     normalize, persist. Consumes API quota.
- *   - `reprocessAllSnapshots`: read previously-saved snapshots from
- *     MongoDB, normalize, persist. Consumes ZERO API quota — perfect
- *     for re-running after a schema change or a parser fix.
  */
 @Injectable()
 export class ScopusFetcherService {
@@ -88,9 +75,6 @@ export class ScopusFetcherService {
     return this.fetchAndStoreByExternalId(profile);
   }
 
-  /**
-   * Smoke-test — does not persist or save snapshots.
-   */
   async testByExternalId(scopusAuthorId: string) {
     this.ensureApiKey();
     let pages: any[];
@@ -110,12 +94,8 @@ export class ScopusFetcherService {
   }
 
   /**
-   * Replays every successful snapshot for SCOPUS through the current
-   * upsert logic. No API quota is consumed.
-   *
    * Used by `POST /publication-details/rebuild-from-snapshots` to
    * repopulate the relational tables after the co-authorship refactor
-   * (or any future schema/logic change).
    */
   async reprocessAllSnapshots(): Promise<{
     snapshotsProcessed: number;
@@ -164,10 +144,6 @@ export class ScopusFetcherService {
     );
     return result;
   }
-
-  // ──────────────────────────────────────────────────────────────────
-  // Internals (private)
-  // ──────────────────────────────────────────────────────────────────
 
   private async fetchAndStoreByExternalId(
     profile: ResearcherProfile,
@@ -283,7 +259,6 @@ export class ScopusFetcherService {
     };
   }
 
-  /** Used only by `testByExternalId` for the smoke-test response shape. */
   private normalizeForPreview(entry: any) {
     const coverDate = entry?.['prism:coverDate'];
     return {
