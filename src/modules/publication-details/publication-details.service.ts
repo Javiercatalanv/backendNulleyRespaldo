@@ -5,6 +5,7 @@ import { PublicationDetail } from './entities/publication-detail.entity';
 import { PublicationAuthorship } from './entities/publication-authorship.entity';
 import { JcrResolverService } from '../jcr-resolver/jcr-resolver.service';
 import { UpsertPublicationDetailInput } from './dto/upsert-publication-detail.dto';
+import { dedupeByPriority } from './dedupe.util';
 
 @Injectable()
 export class PublicationDetailsService {
@@ -171,7 +172,7 @@ export class PublicationDetailsService {
   }
 
   async findByResearcher(researcherId: string): Promise<PublicationDetail[]> {
-    return this.publicationRepository
+    const pubs = await this.publicationRepository
       .createQueryBuilder('pd')
       .innerJoin('pd.authorships', 'auth')
       .innerJoin('auth.profile', 'profile')
@@ -183,10 +184,11 @@ export class PublicationDetailsService {
       .orderBy('pd.year', 'DESC')
       .addOrderBy('pd.title', 'ASC')
       .getMany();
+    return dedupeByPriority(pubs);
   }
 
-  findAll(): Promise<PublicationDetail[]> {
-    return this.publicationRepository.find({
+  async findAll(): Promise<PublicationDetail[]> {
+    const pubs = await this.publicationRepository.find({
       relations: [
         'authorships',
         'authorships.profile',
@@ -195,6 +197,7 @@ export class PublicationDetailsService {
       ],
       order: { year: 'DESC' },
     });
+    return dedupeByPriority(pubs);
   }
 
   async resetAll(): Promise<{ deletedPublications: number; deletedAuthorships: number }> {
